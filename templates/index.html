@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Steel Beam Detection - Login</title>
+
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="auth-wrapper">
+    <div class="auth-box">
+        <h2 class="title">Steel Beam Detection</h2>
+
+        <!-- ADD THIS FORM -->
+        <form action="/login" method="POST">
+
+            <input 
+                type="text" 
+                name="username" 
+                class="input" 
+                placeholder="Employee ID" 
+                required
+            >
+
+            <input 
+                type="password" 
+                name="password" 
+                class="input" 
+                placeholder="Password" 
+                required
+            >
+
+            <button class="btn-primary" type="submit">Login</button>
+        </form>
+        <!-- END FORM -->
+
+        <p class="link">Don’t have an account? 
+            <a href="/signup">Sign up</a>
+        </p>
+    </div>
+</div>
+
+<script>
+    feather.replace();
+</script>
+
+</body>
+</html>

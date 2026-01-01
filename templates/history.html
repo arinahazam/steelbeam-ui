@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>History | SteelBeam</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+   <button class="back-btn" onclick="history.back()">
+    <i data-feather="chevron-left"></i>
+</button>
+    <h2>History</h2>
+    <div style="width:36px;"></div>
+</div>
+
+<!-- PAGE CONTENT -->
+<div class="history-wrapper">
+
+    <!-- SEARCH / FILTER -->
+    <div class="history-filter">
+        <input type="text" placeholder="Search by ID or Date..." id="searchInput">
+        <button class="btn-outline">Filter</button>
+    </div>
+
+    <!-- HISTORY LIST -->
+
+
+   <div class="history-container">
+
+    {% if entries|length == 0 %}
+        <p class="empty-text">No approved records yet.</p>
+    {% endif %}
+
+    {% for entry in entries %}
+    <div class="history-card">
+
+        <div class="history-header">
+            <strong>{{ entry.filename }}</strong>
+            <span class="history-date">{{ entry.created_at }}</span>
+        </div>
+
+        <div class="history-counts">
+            <span>I-Beam: {{ entry.ibeam }}</span>
+            <span>T-Beam: {{ entry.tbeam }}</span>
+            <span class="total">Total: {{ entry.total }}</span>
+        </div>
+
+        <div class="history-meta">
+            Approved by: {{ entry.username or "Inspector" }}
+        </div>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+</div>
+
+<script> feather.replace(); </script>
+</body>
+</html>

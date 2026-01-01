@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Media</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+
+<body>
+
+<div class="topbar">
+   <button class="back-btn" onclick="history.back()">
+    <i data-feather="chevron-left"></i>
+</button>
+
+
+    <h2>Media Upload</h2>
+    <div style="width:36px;"></div>
+</div>
+
+<div class="upload-wrapper">
+
+    <h3>Current Selection</h3>
+
+    <!-- MULTIPLE PREVIEW GALLERY -->
+    <div class="preview-gallery" id="previewGallery">
+        <!-- Previews appear here -->
+    </div>
+
+   
+
+    <!-- Button Row -->
+    <div class="upload-actions">
+        <button class="btn-outline" type="button" onclick="startCamera()">Open Camera</button>
+
+        <label class="btn-outline">
+            Choose Files
+            <input type="file" id="mediaInput" accept="image/*,video/*" multiple hidden onchange="handleMultipleFiles(this)">
+        </label>
+    </div>
+
+    <!-- Hidden file input that will be populated before submit -->
+    <form action="/process_upload" method="POST" enctype="multipart/form-data" id="uploadForm">
+        <input id="hiddenFileInput" name="media" type="file" multiple hidden>
+        <button class="btn-primary upload-btn" type="button" onclick="submitSelectedFiles()">Upload</button>
+    </form>
+
+</div>
+
+<!-- CAMERA MODAL -->
+<div id="cameraModal" class="camera-modal hidden">
+    <video id="cameraStream" autoplay playsinline></video>
+
+    <div class="camera-controls">
+        <button class="btn-primary" onclick="capturePhoto()">Capture Photo</button>
+        <button class="btn-primary" onclick="toggleVideoRecording()"> Start/Stop Recording</button>
+        <button class="btn-outline" onclick="closeCamera()">Close</button>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+<script> feather.replace(); </script>
+
+</body>
+</html>

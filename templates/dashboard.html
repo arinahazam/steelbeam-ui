@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard | SteelBeam</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <h3>SteelBeam</h3>
+        <button class="close-btn" onclick="toggleSidebar()">
+            <i data-feather="x"></i>
+        </button>
+    </div>
+
+    <div class="sidebar-menu">
+        <a href="/dashboard" class="sidebar-item active"><i data-feather="home"></i>Dashboard</a>
+        <a href="/upload" class="sidebar-item"><i data-feather="upload"></i>Upload Media</a>
+        <a href="/verify" class="sidebar-item"><i data-feather="check-circle"></i>Verify Results</a>
+        <a href="/report" class="sidebar-item"><i data-feather="file-text"></i>Generate Report</a>
+        <a href="/history" class="sidebar-item"><i data-feather="archive"></i>History</a>
+
+        <hr class="side-divider">
+
+        <a href="/logout" class="sidebar-item logout"><i data-feather="log-out"></i>Logout</a>
+    </div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+    <button class="menu-btn" onclick="toggleSidebar()"><i data-feather="menu"></i></button>
+    <h2>Dashboard</h2>
+    <div class="placeholder"></div>
+</div>
+
+<!-- PAGE CONTENT -->
+<div class="dashboard-wrapper">
+
+    <div class="welcome">
+        <h2>Welcome Back</h2>
+        <p>Select an action to begin</p>
+    </div>
+
+    <div class="menu-grid">
+
+        <div class="menu-card" onclick="location.href='/upload'">
+            <i data-feather="upload"></i>
+            <h3>Upload Media</h3>
+        </div>
+
+        <div class="menu-card" onclick="location.href='/verify'">
+            <i data-feather="check-circle"></i>
+            <h3>Verify Results</h3>
+        </div>
+
+        <div class="menu-card" onclick="location.href='/report'">
+            <i data-feather="file-text"></i>
+            <h3>Generate Report</h3>
+        </div>
+
+        <div class="menu-card" onclick="location.href='/history'">
+            <i data-feather="archive"></i>
+            <h3>History</h3>
+        </div>
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+<script> feather.replace(); </script>
+
+</body>
+</html>

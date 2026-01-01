@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<head>
+    <meta charset="UTF-8">
+    <title>report</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+
+
+    <style>
+        .report-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            background: white;
+        
+        }
+
+        .report-header {
+            text-align: center;
+            margin-top: 60px;
+            margin-bottom: 30px;
+        }
+
+        .report-section {
+            margin-bottom: 60px;
+        }
+
+        .report-images {
+            display: flex;
+            gap: 20px;
+        }
+
+        .report-images img {
+            width: 100%;
+            border-radius: 12px;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .summary-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .status {
+            font-weight: bold;
+            color: green;
+        }
+
+        .print-btn {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        @media print {
+            .print-btn { display: none; }
+            body { background: white; }
+        }
+    </style>
+</head>
+
+<body>
+ <div class="topbar">
+    <button class="back-btn" onclick="window.location.href='/dashboard'">&lt;</button>
+    <h2>Report</h2>
+    <div style="width:36px;"></div>
+</div>
+
+<div class="report-container">
+
+    <div class="report-header">
+        
+        <h2>Steel Beam Inspection Report</h2>
+        <p>Date: {{ session.date }}</p>
+        <p>Session ID: {{ session.id }}</p>
+    </div>
+
+    <div class="report-section">
+        <h3>Detection Results</h3>
+
+        <div class="report-images">
+            <div>
+                <p>Original Image</p>
+                <img src="{{ url_for('static', filename=session.original_image) }}">
+            </div>
+
+            <div>
+                <p>Processed Image</p>
+                <img src="{{ url_for('static', filename=session.processed_image) }}">
+            </div>
+        </div>
+    </div>
+
+    <div class="report-section">
+        <h3>Detection Summary</h3>
+
+    </div>
+
+    <div class="report-section">
+        <p>Status: <span class="status">{{ session.status }}</span></p>
+    </div>
+
+    <div class="print-btn">
+        <button onclick="window.print()">Print / Save as PDF</button>
+    </div>
+
+</div>
+
+</body>
+</html>

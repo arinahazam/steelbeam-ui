@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up | SteelBeam</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="auth-wrapper">
+    <div class="auth-box">
+        <h2 class="title">Create an Account</h2>
+
+        <form action="/signup" method="POST" id="signupForm">
+
+          
+
+            <!-- Username -->
+            <input 
+                type="text" 
+                name="username" 
+                class="input" 
+                placeholder="Employee ID" 
+                required
+            >
+
+            <!-- Email -->
+            <input 
+                type="email" 
+                name="email" 
+                class="input" 
+                placeholder="Email" 
+                required
+            >
+
+            <!-- Password -->
+            <input 
+                type="password" 
+                name="password" 
+                class="input" 
+                placeholder="Password" 
+                required
+            >
+
+            <!-- Confirm Password -->
+            <input 
+                type="password" 
+                name="confirm" 
+                class="input" 
+                placeholder="Confirm Password" 
+                required
+            >
+
+            <button class="btn-primary" type="submit">Create Account</button>
+        </form>
+
+        <p class="link"><a href="/">Already have an account? Login</a></p>
+    </div>
+</div>
+
+</body>
+</html>
