@@ -1,4 +1,0 @@
-flask
-gradio_client
-requests
-gunicorn
