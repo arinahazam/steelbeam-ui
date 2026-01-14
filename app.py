@@ -1,4 +1,9 @@
 import os
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1" 
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
+
 import sqlite3
 import csv
 import io
