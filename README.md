@@ -48,14 +48,14 @@ model10_t_expert.pt
 
 5. OPERATIONAL WORKFLOW 
 
-1. Launch: Run python app.py and navigate to http://127.0.0.1:5000. and Log in/Sign up to access 
+5.1. Launch: Run python app.py and navigate to http://127.0.0.1:5000. and Log in/Sign up to access 
 
-2. Upload: Use the Dashboard to upload batch photos or videos from the warehouse.
+5.2. Upload: Use the Dashboard to upload batch photos or videos from the warehouse.
 
-3. Verify: Review the AI-generated segmentation masks. The system will display different colored masks for I-beams and T-beams. User choose to reject/approve
+5.3. Verify: Review the AI-generated segmentation masks. The system will display different colored masks for I-beams and T-beams. User choose to reject/approve
 
-4. Approve: Once verified, the data is committed to the permanent history.
+5.4. Approve: Once verified, the data is committed to the permanent history.
 
-5. Report: Generate a PDF Production Summary for the shift supervisor.
+5.5. Report: Generate a PDF Production Summary for the shift supervisor.
 
-6. MAINTENANCE & CONTACT This repository is managed under Git version control. For updates to the detection thresholds, modify the confidence (conf) parameters in the run_model_yolo function within utils.py.
+5.6. MAINTENANCE & CONTACT This repository is managed under Git version control. For updates to the detection thresholds, modify the confidence (conf) parameters in the run_model_yolo function within utils.py.
