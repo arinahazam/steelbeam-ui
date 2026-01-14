@@ -2,66 +2,239 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>History | SteelBeam</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project History | SteelBeam</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://unpkg.com/feather-icons"></script>
-</head>
+    <style>
+        :root { --primary: #002d62; --bg: #f4f7f9; --text: #1e293b; }
+        body { padding-top: 100px; background: var(--bg); font-family: 'Inter', 'Segoe UI', sans-serif; margin: 0; }
+    
+        /* BACK BUTTON: Background removed */
+        .back-btn { 
+            background: transparent; 
+            border: none; 
+            cursor: pointer; 
+            padding: 10px; 
+            border-radius: 8px; 
+            color: var(--primary); 
+            display: flex; 
+            align-items: center; 
+            transition: 0.2s;
+        }
+        .back-btn:hover { background: rgba(0, 45, 98, 0.05); }
 
+        .history-wrapper { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+        .header-actions { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 30px; 
+            gap: 20px; 
+            width: 100%;
+        }
+
+        /* SEARCH BOX: Icon inside the input */
+        .search-box { 
+            position: relative; 
+            width: 40%; 
+            min-width: 300px;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box input {
+            width: 100%; 
+            padding: 12px 15px 12px 45px; /* Left padding creates space for the icon */
+            border-radius: 12px;
+            border: 1px solid #e2e8f0; 
+            outline: none; 
+            transition: 0.2s; 
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            background: white;
+        }
+        
+        .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0, 45, 98, 0.1); }
+
+        .search-box i { 
+            position: absolute; 
+            left: 15px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            color: #94a3b8; 
+            pointer-events: none;
+            width: 18px;
+            height: 18px;
+        }
+
+        .filter-tabs { display: flex; background: #e2e8f0; padding: 4px; border-radius: 14px; white-space: nowrap; }
+        .tab { padding: 8px 20px; cursor: pointer; border-radius: 10px; font-size: 0.9rem; font-weight: 600; color: #64748b; transition: 0.3s; }
+        .tab.active { background: white; color: var(--primary); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+
+        /* Table Card */
+        .table-card { background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); overflow: hidden; border: 1px solid #edf2f7; }
+        
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        
+        th { 
+            background: #f8fafc; padding: 20px 12px; text-align: left; 
+            font-size: 0.75rem; color: #64748b; text-transform: uppercase; 
+            letter-spacing: 1px; border-bottom: 2px solid #f1f5f9; 
+        }
+        
+        td { 
+            padding: 18px 12px; border-bottom: 1px solid #f1f5f9; 
+            font-size: 0.9rem; color: #1e293b; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+        }
+
+        th:nth-child(1), td:nth-child(1) { width: 12%; }
+        th:nth-child(2), td:nth-child(2) { width: 18%; }
+        th:nth-child(3), td:nth-child(3) { width: 22%; }
+        th:nth-child(4), td:nth-child(4),
+        th:nth-child(5), td:nth-child(5),
+        th:nth-child(6), td:nth-child(6) { width: 10%; text-align: center; }
+        th:nth-child(7), td:nth-child(7) { width: 12%; text-align: center; }
+        th:nth-child(8), td:nth-child(8) { width: 6%; text-align: center; }
+
+        .file-name-cell { display: block; font-weight: 600; color: var(--primary); overflow: hidden; text-overflow: ellipsis; }
+        .badge { padding: 6px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; }
+        .badge.approved { background: #dcfce7; color: #15803d; }
+        .badge.rejected { background: #fee2e2; color: #b91c1c; }
+        .emp-tag { background: #f1f5f9; padding: 4px 8px; border-radius: 6px; color: #475569; font-weight: 700; font-size: 0.8rem; }
+        
+        .view-btn { background: var(--primary); color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; }
+        tr:hover { background: #f8fafc; cursor: pointer; }
+
+        /* Modal */
+        .detail-modal {
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.85);
+            align-items: center; justify-content: center; backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background: white; padding: 25px; border-radius: 16px;
+            max-width: 900px; width: 95%; position: relative;
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .modal-body img { width: 100%; border-radius: 12px; display: block; }
+        .close-detail { font-size: 30px; cursor: pointer; color: #64748b; border: none; background: none; }
+    </style>
+</head>
 <body>
 
-<!-- TOPBAR -->
 <div class="topbar">
-   <button class="back-btn" onclick="history.back()">
-    <i data-feather="chevron-left"></i>
-</button>
+    <button class="back-btn" onclick="location.href='/dashboard'">
+        <i data-feather="chevron-left"></i>
+    </button>
     <h2>History</h2>
     <div style="width:36px;"></div>
 </div>
 
-<!-- PAGE CONTENT -->
 <div class="history-wrapper">
-
-    <!-- SEARCH / FILTER -->
-    <div class="history-filter">
-        <input type="text" placeholder="Search by ID or Date..." id="searchInput">
-        <button class="btn-outline">Filter</button>
+    <div class="header-actions">
+        <div class="search-box">
+            <i data-feather="search"></i>
+            <input type="text" id="searchInput" placeholder="Search records..." onkeyup="filterTable()">
+        </div>
+        <div class="filter-tabs">
+            <div class="tab active" onclick="setFilter('ALL', this)">All</div>
+            <div class="tab" onclick="setFilter('APPROVED', this)">Approved</div>
+            <div class="tab" onclick="setFilter('REJECTED', this)">Rejected</div>
+        </div>
     </div>
 
-    <!-- HISTORY LIST -->
-
-
-   <div class="history-container">
-
-    {% if entries|length == 0 %}
-        <p class="empty-text">No approved records yet.</p>
-    {% endif %}
-
-    {% for entry in entries %}
-    <div class="history-card">
-
-        <div class="history-header">
-            <strong>{{ entry.filename }}</strong>
-            <span class="history-date">{{ entry.created_at }}</span>
-        </div>
-
-        <div class="history-counts">
-            <span>I-Beam: {{ entry.ibeam }}</span>
-            <span>T-Beam: {{ entry.tbeam }}</span>
-            <span class="total">Total: {{ entry.total }}</span>
-        </div>
-
-        <div class="history-meta">
-            Approved by: {{ entry.username or "Inspector" }}
-        </div>
-
+    <div class="table-card">
+        <table id="historyTable">
+            <thead>
+                <tr>
+                    <th>Verified By</th>
+                    <th>Date</th>
+                    <th>Filename</th>
+                    <th>I-Beam</th>
+                    <th>T-Beam</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>View</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in entries %}
+                <tr class="data-row" data-status="{{ entry.status }}" onclick="showDetail('{{ url_for('static', filename='processed/' + entry.processed_file) }}', '{{ entry.filename }}')">
+                    <td><span class="emp-tag">{{ entry.employee_id }}</span></td>
+                    <td style="color: #64748b; font-size: 0.8rem;">{{ entry.created_at }}</td>
+                    <td><span class="file-name-cell" title="{{ entry.filename }}">{{ entry.filename }}</span></td>
+                    <td>{{ entry.ibeam }}</td>
+                    <td>{{ entry.tbeam }}</td>
+                    <td><strong style="color: var(--primary);">{{ entry.total }}</strong></td>
+                    <td><span class="badge {{ entry.status|lower }}">{{ entry.status }}</span></td>
+                    <td>
+                        <button class="view-btn">
+                            <i data-feather="eye" style="width:14px; height:14px;"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-    {% endfor %}
-
 </div>
 
+<div id="detailModal" class="detail-modal" onclick="closeDetail()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div>
+                <h3 id="modalTitle" style="margin: 0; color: var(--primary);">Processed Result</h3>
+                <small style="color: #64748b;">AI Segmented Inspection View</small>
+            </div>
+            <button class="close-detail" onclick="closeDetail()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <img id="modalImg" src="" alt="Segmented View">
+        </div>
+    </div>
 </div>
 
-<script> feather.replace(); </script>
+<script>
+    feather.replace();
+    let currentFilter = 'ALL';
+
+    function setFilter(status, el) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        currentFilter = status;
+        filterTable();
+    }
+
+    function filterTable() {
+        let query = document.getElementById("searchInput").value.toLowerCase();
+        let rows = document.querySelectorAll(".data-row");
+        rows.forEach(row => {
+            let status = row.getAttribute('data-status');
+            let text = row.innerText.toLowerCase();
+            let statusMatch = (currentFilter === 'ALL' || status === currentFilter);
+            let searchMatch = text.includes(query);
+            row.style.display = (statusMatch && searchMatch) ? "" : "none";
+        });
+    }
+
+    function showDetail(imgSrc, filename) {
+        document.getElementById('modalImg').src = imgSrc;
+        document.getElementById('modalTitle').innerText = filename;
+        document.getElementById('detailModal').style.display = 'flex';
+    }
+
+    function closeDetail() {
+        document.getElementById('detailModal').style.display = 'none';
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") closeDetail();
+    });
+</script>
 </body>
 </html>

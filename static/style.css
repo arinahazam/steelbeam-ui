@@ -711,3 +711,149 @@ h3, h4 {
         grid-template-columns: 1fr;
     }
 }
+
+
+<style>
+ .flash-error {
+    background-color: #ff4d4d;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 100px; /* Adjust this number to move it further down */
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centers the text */
+    font-size: 14px;
+    animation: slideDown 0.3s ease;
+}
+    /* Loading Spinner Styling */
+    .spinner {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(255,255,255,0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+        margin-right: 10px;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .btn-disabled {
+        opacity: 0.6;
+        cursor: not-allowed !important;
+        pointer-events: none;
+    }
+</style>
+
+/* -------------------------
+   HISTORY PAGE & TOPBAR FIXES
+-------------------------- */
+
+/* TOPBAR - Refined */
+.topbar {
+    width: 100%;
+    height: 64px;
+    background: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 22px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+/* BACK BUTTON: Clean icon-only look */
+.back-btn {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: #0c2b5f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+}
+
+.back-btn:hover {
+    opacity: 0.7;
+}
+
+.back-btn svg, .back-btn i {
+    width: 24px;
+    height: 24px;
+    stroke-width: 2.5;
+}
+
+/* HEADER ACTIONS: Container for Search and Tabs */
+
+
+/* SEARCH BOX: The "Icon-Inside" Logic */
+.search-box {
+    position: relative;
+    width: 40%;
+    min-width: 300px;
+}
+
+/* The Magnifying Glass Position */
+.search-box i, .search-box svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    pointer-events: none; /* Allows clicking through the icon into the input */
+    width: 18px;
+    height: 18px;
+}
+
+/* The Input Field */
+.search-box input {
+    width: 100%;
+    padding: 12px 16px 12px 42px; /* 42px left padding leaves room for icon */
+    font-size: 15px;
+    border: 1px solid #d0d5dd;
+    border-radius: 12px;
+    background: #ffffff;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.search-box input:focus {
+    border-color: #0c2b5f;
+    box-shadow: 0 0 0 4px rgba(12, 43, 95, 0.1);
+}
+
+/* FLASH MESSAGES - Toast-style positioning */
+.flash-error {
+    background-color: #ff4d4d;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+    position: fixed;
+    top: 80px; /* Sits just below topbar */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1100;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(255, 77, 77, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideDown 0.3s ease forwards;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translate(-50%, -20px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}

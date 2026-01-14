@@ -1,117 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<head>
     <meta charset="UTF-8">
-    <title>report</title>
-
+    <title>Analytics Report | SteelBeam</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://unpkg.com/feather-icons"></script>
-</head>
-
-
     <style>
-        .report-container {
-            max-width: 800px;
-            margin: auto;
-            padding: 30px;
-            background: white;
+        :root { --primary: #002d62; --bg: #f4f7f9; }
+        body { padding-top: 80px; background: var(--bg); font-family: 'Inter', sans-serif; margin: 0; }
+
+        .report-wrapper { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+        .table-controls {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 25px; background: white; padding: 15px;
+            border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .search-box { position: relative; flex-grow: 1; max-width: 500px; }
+        .search-box input { width: 100%; padding: 12px 15px 12px 45px; border-radius: 10px; border: 1px solid #ddd; outline: none; }
+        .search-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888; }
+
+        .table-card { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 120px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8f9fa; padding: 18px 15px; text-align: left; font-size: 0.75rem; color: #888; text-transform: uppercase; border-bottom: 1px solid #eee; }
+        td { padding: 16px 15px; border-bottom: 1px solid #f9f9f9; font-size: 0.9rem; }
         
-        }
+        .badge { padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
+        .badge-approved { background: #e6f4ea; color: #1e7e34; }
+        .badge-rejected { background: #fce8e6; color: #d93025; }
 
-        .report-header {
-            text-align: center;
-            margin-top: 60px;
-            margin-bottom: 30px;
+        .export-action-bar {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+            background: white; border: 1px solid #ddd; padding: 15px 35px;
+            border-radius: 100px; display: none; box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            z-index: 2000; align-items: center; gap: 25px; border-top: 4px solid var(--primary);
         }
-
-        .report-section {
-            margin-bottom: 60px;
-        }
-
-        .report-images {
-            display: flex;
-            gap: 20px;
-        }
-
-        .report-images img {
-            width: 100%;
-            border-radius: 12px;
-        }
-
-        .summary-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .summary-table td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .status {
-            font-weight: bold;
-            color: green;
-        }
-
-        .print-btn {
-            margin-top: 30px;
-            text-align: center;
-        }
-
-        @media print {
-            .print-btn { display: none; }
-            body { background: white; }
-        }
+        .btn-generate { color: white; border: none; padding: 12px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; }
     </style>
 </head>
-
 <body>
- <div class="topbar">
-    <button class="back-btn" onclick="window.location.href='/dashboard'">&lt;</button>
-    <h2>Report</h2>
+
+<div class="topbar">
+    <button class="back-btn" onclick="location.href='/dashboard'">
+        <i data-feather="chevron-left"></i>
+    </button>
+    <h2>Production Report</h2>
     <div style="width:36px;"></div>
 </div>
 
-<div class="report-container">
-
-    <div class="report-header">
-        
-        <h2>Steel Beam Inspection Report</h2>
-        <p>Date: {{ session.date }}</p>
-        <p>Session ID: {{ session.id }}</p>
-    </div>
-
-    <div class="report-section">
-        <h3>Detection Results</h3>
-
-        <div class="report-images">
-            <div>
-                <p>Original Image</p>
-                <img src="{{ url_for('static', filename=session.original_image) }}">
-            </div>
-
-            <div>
-                <p>Processed Image</p>
-                <img src="{{ url_for('static', filename=session.processed_image) }}">
-            </div>
+<div class="report-wrapper">
+    <div class="table-controls">
+        <div class="search-box">
+            <i data-feather="search"></i>
+            <input type="text" id="reportSearch" placeholder="Search report..." onkeyup="filterReportTable()">
         </div>
+        <div id="selection-status" style="font-weight: 600; color: var(--primary);">0 records selected</div>
     </div>
 
-    <div class="report-section">
-        <h3>Detection Summary</h3>
-
+    <div class="table-card">
+        <table id="reportTable">
+            <thead>
+                <tr>
+                    <th style="width: 40px;"><input type="checkbox" onclick="toggleAll(this)"></th>
+                    <th>Verified By</th>
+                    <th>Status</th>
+                    <th>Date Created</th>
+                    <th>Filename</th>
+                    <th>I-Beam</th>
+                    <th>T-Beam</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in entries %}
+                <tr class="report-row">
+                    <td><input type="checkbox" class="report-check" value="{{ entry.id }}" onclick="handleRowSelect()"></td>
+                    <td style="font-weight: 600; color: var(--primary);">{{ entry.employee_id }}</td>
+                    <td><span class="badge {% if entry.status == 'APPROVED' %}badge-approved{% else %}badge-rejected{% endif %}">{{ entry.status }}</span></td>
+                    <td>{{ entry.created_at }}</td>
+                    <td>{{ entry.filename }}</td>
+                    <td>{{ entry.ibeam }}</td>
+                    <td>{{ entry.tbeam }}</td>
+                    <td><strong>{{ entry.total }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
-
-    <div class="report-section">
-        <p>Status: <span class="status">{{ session.status }}</span></p>
-    </div>
-
-    <div class="print-btn">
-        <button onclick="window.print()">Print / Save as PDF</button>
-    </div>
-
 </div>
 
+<div id="exportBar" class="export-action-bar">
+    <span id="bar-text" style="font-weight: 700; color: var(--primary);">0 Records Selected</span>
+    <div style="display: flex; gap: 12px;">
+        <button class="btn-generate" onclick="downloadSelected('csv')" style="background: #28a745;"><i data-feather="file-text"></i> CSV</button>
+        <button class="btn-generate" onclick="downloadSelected('pdf')" style="background: #d9534f;"><i data-feather="file"></i> PDF</button>
+    </div>
+</div>
+
+<script>
+    feather.replace();
+
+    function toggleAll(master) {
+        document.querySelectorAll(".report-check").forEach(cb => {
+            if(cb.closest('tr').style.display !== 'none') cb.checked = master.checked;
+        });
+        handleRowSelect();
+    }
+
+    function handleRowSelect() {
+        const checked = document.querySelectorAll(".report-check:checked");
+        const bar = document.getElementById("exportBar");
+        document.getElementById("selection-status").innerText = `${checked.length} records selected`;
+        document.getElementById("bar-text").innerText = `${checked.length} Records Selected`;
+        bar.style.display = checked.length > 0 ? "flex" : "none";
+    }
+
+    function filterReportTable() {
+        let input = document.getElementById("reportSearch").value.toLowerCase();
+        document.querySelectorAll(".report-row").forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(input) ? "" : "none";
+        });
+    }
+
+    function downloadSelected(format) {
+        const selected = Array.from(document.querySelectorAll(".report-check:checked")).map(cb => cb.value);
+        if (selected.length > 0) {
+            const route = format === 'pdf' ? '/export_pdf' : '/export_report';
+            window.location.href = `${route}?ids=${selected.join(',')}`;
+        }
+    }
+</script>
 </body>
 </html>

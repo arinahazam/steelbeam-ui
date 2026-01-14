@@ -1,49 +1,58 @@
 import os
 import time
-import cv2
 from ultralytics import YOLO
 
-UPLOAD_DIR = "static/uploads"
-PROCESSED_DIR = "static/processed"
-
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs(PROCESSED_DIR, exist_ok=True)
-
-
 def save_uploaded_files(files):
-    saved = []
-    for f in files:
-        filename = f"{int(time.time())}_{f.filename}"
-        path = os.path.join(UPLOAD_DIR, filename)
-        f.save(path)
-        saved.append((filename, path))
-    return saved
+    upload_dir = os.path.join("static", "uploads")
+    os.makedirs(upload_dir, exist_ok=True)
+    saved_info = []
+    for file in files:
+        # Use a single timestamp for the batch ID
+        filename = f"{int(time.time())}_{file.filename.replace(' ', '_')}"
+        path = os.path.join(upload_dir, filename)
+        file.save(path)
+        saved_info.append((filename, path))
+    return saved_info
 
+def run_model_yolo(model, filepath):
+    filename = os.path.basename(filepath)
+    base_name = filename.split('.')[0]
+    is_video = filename.lower().endswith(('.mp4', '.avi', '.mov', '.mkv'))
+    processed_dir = os.path.join("static", "processed")
+    os.makedirs(processed_dir, exist_ok=True)
+    
+    # Generate ONE batch_id for all frames in this file
+    batch_id = int(time.time())
+    
+    # Predict frames - stride helps prevent over-processing videos
+    results_gen = model.predict(source=filepath, conf=0.15, imgsz=960, vid_stride=15 if is_video else 1, stream=True)
+    results = list(results_gen)
 
-def run_model_yolo(model, image_path):
-    results = model(image_path)[0]
+    processed_filenames = []
+    for i, res in enumerate(results):
+        # Unique filename pattern
+        frame_name = f"proc_{i}_{batch_id}_{base_name}.jpg"
+        save_path = os.path.join(processed_dir, frame_name)
+        res.save(filename=save_path) 
+        processed_filenames.append(frame_name)
 
-    # Count classes
-    counts = {"I-beam": 0, "T-beam": 0, "Total": 0}
+    # Summary: Frame with the highest count
+    max_total = -1
+    counts = {"ibeam": 0, "tbeam": 0, "total": 0}
+    for res in results:
+        c = extract_counts(res)
+        if c["total"] > max_total:
+            counts = c
+            max_total = c["total"]
 
-    if results.boxes is not None:
-        cls_ids = results.boxes.cls.tolist()
-        names = results.names
+    return {"processed_files": processed_filenames, "counts": counts, "is_video": is_video}
 
-        for cid in cls_ids:
-            label = names[int(cid)]
-            if label in counts:
-                counts[label] += 1
-                counts["Total"] += 1
-
-    # Save visualized output
-    output_filename = f"processed_{int(time.time())}.png"
-    output_path = os.path.join(PROCESSED_DIR, output_filename)
-
-    annotated = results.plot()
-    cv2.imwrite(output_path, annotated)
-
-    return {
-        "processed_file": output_filename,
-        "counts": counts
-    }
+def extract_counts(result):
+    c_dict = {"ibeam": 0, "tbeam": 0, "total": 0}
+    if result.boxes is not None:
+        for c in result.boxes.cls:
+            label = result.names[int(c)].lower().replace(" ", "").replace("-", "")
+            if "ibeam" in label: c_dict["ibeam"] += 1
+            elif "tbeam" in label: c_dict["tbeam"] += 1
+    c_dict["total"] = c_dict["ibeam"] + c_dict["tbeam"]
+    return c_dict

@@ -1,5 +1,13 @@
+# Ignore the database
+steelbeam.db
+
+# Ignore huge model weights (they should be downloaded, not synced to Git)
+models/*.pt
+
 venv/
+
+# Ignore uploaded media and processed results
+static/uploads/
+static/results/
 __pycache__/
-*.db
-static/uploads/*
-static/processed/*
+.env
