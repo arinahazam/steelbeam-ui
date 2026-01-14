@@ -215,7 +215,7 @@
                          .map(cb => cb.value);
     
     if (selected.length > 0) {
-        // Matches your log: /export_pdf?ids=57,55
+        
         const route = format === 'pdf' ? '/export_pdf' : '/export_report';
         window.location.href = `${route}?ids=${selected.join(',')}`;
     }
