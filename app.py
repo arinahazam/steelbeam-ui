@@ -274,8 +274,13 @@ def export_pdf():
     pdf.cell(30, 12, "", border=1, fill=True)
     pdf.ln(20)
 
-    pdf_bytes = bytes(pdf.output()) 
-    response = make_response(pdf_bytes)
+# --- FINAL FIX FOR PDF CORRUPTION ---
+    # fpdf 1.7.2 requires string output + latin-1 encoding
+    pdf_output = pdf.output(dest='S')
+    if isinstance(pdf_output, str):
+        pdf_output = pdf_output.encode('latin-1')
+
+    response = make_response(pdf_output)
     response.headers["Content-Disposition"] = "attachment; filename=Production_Report.pdf"
     response.headers["Content-type"] = "application/pdf"
     return response
